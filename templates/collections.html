@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Collections</h1>
+
+<form method="POST" class="form-block">
+  <input name="collectionName" placeholder="Enter new collection name" />
+  <button type="submit">Create</button>
+</form>
+
+<div class="collection-grid">
+  {% for c in collections %}
+  <div class="collection-card">
+    <h3>{{ c }}</h3>
+    <div class="card-actions">
+      <a href="/export_collection/{{ c }}" class="export-btn">⬇️ Export</a>
+      <a href="/delete_collection/{{ c }}" class="delete-btn">🗑️ Delete</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

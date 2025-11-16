@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Upload & Ingestion</h1>
+
+<form method="POST" enctype="multipart/form-data" class="form-block">
+  <label>Select Collection:</label>
+  <select name="collection" required>
+    {% for c in collections %}
+      <option>{{ c }}</option>
+    {% endfor %}
+  </select>
+
+  <label>Input Type:</label>
+  <select name="input_type" id="input_type" onchange="toggleInputType()">
+    <option value="text">Enter Text</option>
+    <option value="file">Upload File</option>
+  </select>
+
+  <div id="textInputBlock">
+    <textarea name="text" placeholder="Enter or paste text here..."></textarea>
+  </div>
+
+  <div id="fileInputBlock" style="display:none;">
+    <input type="file" name="file" accept=".txt,.pdf,.docx" />
+  </div>
+
+  <label>Metadata (JSON)</label>
+  <input name="metadata" placeholder='{"author": "me"}' />
+
+  <button type="submit">Upload</button>
+</form>
+
+<script>
+function toggleInputType() {
+  const type = document.getElementById("input_type").value;
+  document.getElementById("textInputBlock").style.display = (type === "text") ? "block" : "none";
+  document.getElementById("fileInputBlock").style.display = (type === "file") ? "block" : "none";
+}
+</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vector DB UI</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <h2>VectorDB UI</h2>
+    <nav>
+      <a href="/">🏠 Home</a>
+      <a href="/collections">📁 Collections</a>
+      <a href="/upload">⬆ Upload</a>
+      <a href="/search">🔍 Search</a>
+      <a href="/visualize">📊 Visualization</a>
+    </nav>
+  </aside>
+
+  <!-- RIGHT CONTENT -->
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+
+</div>
+</body>
+</html>

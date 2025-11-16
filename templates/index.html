@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Quick Actions</h1>
+
+<div class="card-container">
+  <a href="/collections" class="card-option">
+    <h2>📁 Collections</h2>
+    <p>Manage your collections — create, export, or delete.</p>
+  </a>
+
+  <a href="/upload" class="card-option">
+    <h2>📤 Upload</h2>
+    <p>Upload text or files to generate vector embeddings.</p>
+  </a>
+
+  <a href="/search" class="card-option">
+    <h2>🔍 Search</h2>
+    <p>Run hybrid semantic or keyword searches with filters.</p>
+  </a>
+
+  <a href="/visualize" class="card-option">
+    <h2>📈 Visualization</h2>
+    <p>Explore embeddings interactively with PCA projection.</p>
+  </a>
+</div>
+
+<hr>
+
+<h1>Dashboard Summary</h1>
+
+<div class="summary-grid">
+  <div class="summary-card">
+    <h2>{{ stats.total_collections }}</h2>
+    <p>Total Collections</p>
+  </div>
+  <div class="summary-card">
+    <h2>{{ stats.total_documents }}</h2>
+    <p>Total Documents</p>
+  </div>
+</div>
+
+<hr>
+
+<h2>Recent Collections</h2>
+
+<div class="recent-collections">
+  {% if stats.collections %}
+    {% for c in stats.collections %}
+      <div class="recent-item">
+        <div class="recent-left">
+          <span class="recent-icon">📦</span>
+          <div class="recent-info">
+            <h4>{{ c.name }}</h4>
+            <p>{{ c.count }} documents</p>
+          </div>
+        </div>
+        <a href="/export_collection/{{ c.name }}" class="export-btn">⬇️ Export</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No collections available yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

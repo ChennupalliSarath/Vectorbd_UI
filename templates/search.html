@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Search</h1>
+
+<form method="POST" class="form-block">
+  <select name="collection">
+    {% for c in collections %}
+      <option {% if selected_col == c %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+
+  <input name="query" placeholder="Search query" />
+  <input name="topk" type="number" value="5" />
+
+  <label>Search Mode:</label>
+  <select name="mode">
+    <option value="vector">Vector</option>
+    <option value="keyword">Keyword</option>
+    <option value="hybrid">Hybrid</option>
+  </select>
+
+  <label>Filter (JSON)</label>
+  <input name="filter" placeholder='{"topic": "AI"}' />
+
+  <button type="submit">Search</button>
+</form>
+
+{% if results %}
+<h2>Results</h2>
+{% for r in results %}
+<div class="card">
+  <div class="card-content">
+    <p><strong>Score:</strong> {{ r.score|round(3) }}</p>
+    <p><strong>Text:</strong> {{ r.text }}</p>
+    <p><strong>Metadata:</strong> {{ r.metadata }}</p>
+  </div>
+
+  <div class="card-actions">
+    <a href="/delete_document/{{ selected_col }}/{{ r.id }}" 
+       class="delete-btn">🗑 Delete</a>
+  </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

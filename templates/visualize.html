@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Advanced Embedding Visualization</h1>
+<div id="plot"></div>
+
+<script src="/static/plotly-latest.min.js"></script>
+<script>
+const cpoints = {{ points|safe }};
+const clabels = {{ labels|safe }};
+const ccolors = {{ colors|safe }};
+
+const trace = {
+  x: cpoints.map(p => p[0]),
+  y: cpoints.map(p => p[1]),
+  mode: 'markers',
+  text: clabels,
+  marker: { color: ccolors, size: 8, opacity: 0.8 }
+};
+
+Plotly.newPlot('plot', [trace], {
+  margin: { t: 30 },
+  xaxis: { title: 'PCA 1' },
+  yaxis: { title: 'PCA 2' },
+});
+</script>
+{% endblock %}
