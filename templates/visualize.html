@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>Advanced Embedding Visualization</h1>
+
+{% if message %}
+<p style="color: #ef4444;">{{ message }}</p>
+{% endif %}
+
 <div id="plot"></div>
 
 <script src="/static/plotly-latest.min.js"></script>
@@ -9,18 +14,23 @@ const cpoints = {{ points|safe }};
 const clabels = {{ labels|safe }};
 const ccolors = {{ colors|safe }};
 
-const trace = {
-  x: cpoints.map(p => p[0]),
-  y: cpoints.map(p => p[1]),
-  mode: 'markers',
-  text: clabels,
-  marker: { color: ccolors, size: 8, opacity: 0.8 }
-};
+if (cpoints.length === 0) {
+  document.getElementById("plot").innerHTML =
+    "<p>No embeddings available to visualize.</p>";
+} else {
+  const trace = {
+    x: cpoints.map(p => p[0]),
+    y: cpoints.map(p => p[1]),
+    mode: 'markers',
+    text: clabels,
+    marker: { color: ccolors, size: 8, opacity: 0.8 }
+  };
 
-Plotly.newPlot('plot', [trace], {
-  margin: { t: 30 },
-  xaxis: { title: 'PCA 1' },
-  yaxis: { title: 'PCA 2' },
-});
+  Plotly.newPlot('plot', [trace], {
+    margin: { t: 30 },
+    xaxis: { title: 'PCA 1' },
+    yaxis: { title: 'PCA 2' }
+  });
+}
 </script>
 {% endblock %}

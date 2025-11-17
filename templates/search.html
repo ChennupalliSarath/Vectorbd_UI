@@ -1,46 +1,81 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Search</h1>
 
-<form method="POST" class="form-block">
-  <select name="collection">
-    {% for c in collections %}
-      <option {% if selected_col == c %}selected{% endif %}>{{ c }}</option>
-    {% endfor %}
-  </select>
+<h1>Semantic Search</h1>
 
-  <input name="query" placeholder="Search query" />
-  <input name="topk" type="number" value="5" />
+<!-- Search Form -->
+<form method="POST" class="search-form">
 
-  <label>Search Mode:</label>
-  <select name="mode">
-    <option value="vector">Vector</option>
-    <option value="keyword">Keyword</option>
-    <option value="hybrid">Hybrid</option>
-  </select>
+  <div class="form-block">
+    <label for="collection">Select Collection:</label>
+    <select name="collection" id="collection" required>
+      <option value="">-- Choose a collection --</option>
+      {% for c in collections %}
+      <option value="{{ c }}" {% if selected_col == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
 
-  <label>Filter (JSON)</label>
-  <input name="filter" placeholder='{"topic": "AI"}' />
+  <div class="form-block">
+    <label for="query">Enter your query:</label>
+    <input type="text" name="query" id="query" placeholder="Type your query..." required>
+  </div>
+
+  <div class="form-block">
+    <label for="topk">Top K Results:</label>
+    <input type="number" name="topk" id="topk" value="5" min="1" max="50">
+  </div>
+
+  <div class="form-block">
+    <label for="mode">Search Mode:</label>
+    <select name="mode" id="mode">
+      <option value="vector">Vector</option>
+      <option value="keyword">Keyword</option>
+      <option value="hybrid">Hybrid</option>
+    </select>
+  </div>
+
+  <div class="form-block">
+    <label for="filter">Metadata Filter (JSON Optional):</label>
+    <textarea
+      name="filter"
+      id="filter"
+      placeholder='Example: {"topic": "AI"}'>
+    </textarea>
+  </div>
 
   <button type="submit">Search</button>
 </form>
 
+<hr class="divider" />
+
 {% if results %}
-<h2>Results</h2>
+<h2>Search Results ({{ results|length }})</h2>
+
 {% for r in results %}
 <div class="card">
+
   <div class="card-content">
-    <p><strong>Score:</strong> {{ r.score|round(3) }}</p>
+    <p><strong>Score:</strong> {{ r.score }}</p>
     <p><strong>Text:</strong> {{ r.text }}</p>
     <p><strong>Metadata:</strong> {{ r.metadata }}</p>
+
+    <!-- EMBEDDING SECTION -->
+    <details class="embedding-section">
+      <summary>Show Embedding</summary>
+      <pre class="embedding-box">{{ r.embedding }}</pre>
+    </details>
   </div>
 
   <div class="card-actions">
-    <a href="/delete_document/{{ selected_col }}/{{ r.id }}" 
-       class="delete-btn">🗑 Delete</a>
+    <a href="/delete_document/{{ selected_col }}/{{ r.id }}" class="delete-btn">🗑 Delete</a>
   </div>
+
 </div>
 {% endfor %}
+
+{% elif selected_col %}
+  <p class="no-results">No results found for this query.</p>
 {% endif %}
 
 {% endblock %}
