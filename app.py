@@ -111,20 +111,62 @@ def delete_collection(col_name):
 @app.route("/export_collection/<string:col_name>")
 def export_collection(col_name):
     col = get_col(col_name)
-    data = col.get(include=["documents", "metadatas", "embeddings"])
 
-    export_data = []
-    for i in range(len(data.get("documents", []))):
-        export_data.append({
-            "document": data["documents"][i],
-            "metadata": data["metadatas"][i],
-            "embedding": data["embeddings"][i]
+    try:
+        data = col.get(include=["documents", "metadatas", "embeddings"])
+    except Exception as e:
+        return f"Error reading collection: {str(e)}", 500
+
+    documents = data.get("documents")
+    metadatas = data.get("metadatas")
+    embeddings = data.get("embeddings")
+
+    # Handle None or NumPy arrays safely
+    if documents is None or len(documents) == 0:
+        documents = []
+    if metadatas is None or len(metadatas) == 0:
+        metadatas = [{} for _ in range(len(documents))]
+    if embeddings is None or len(embeddings) == 0:
+        embeddings = [[] for _ in range(len(documents))]
+
+    export_list = []
+
+    for doc, meta, emb in zip(documents, metadatas, embeddings):
+        # Convert embedding safely
+        if hasattr(emb, "tolist"):
+            emb = emb.tolist()
+
+        # Make metadata JSON safe
+        safe_meta = {}
+        if isinstance(meta, dict):
+            for k, v in meta.items():
+                if isinstance(v, (np.ndarray, list)):
+                    safe_meta[k] = np.array(v).tolist()
+                elif isinstance(v, (int, float, str, bool)) or v is None:
+                    safe_meta[k] = v
+                else:
+                    safe_meta[k] = str(v)
+
+        export_list.append({
+            "document": doc,
+            "metadata": safe_meta,
+            "embedding": emb
         })
 
-    buf = io.BytesIO(json.dumps(export_data, indent=2).encode("utf-8"))
-    buf.seek(0)
+    # Handle completely empty collection
+    if len(export_list) == 0:
+        export_list = [{"message": "No data found in this collection"}]
 
-    return send_file(buf, as_attachment=True, download_name=f"{col_name}_export.json")
+    json_bytes = json.dumps(export_list, indent=2).encode("utf-8")
+    buffer = io.BytesIO(json_bytes)
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"{col_name}_export.json",
+        mimetype="application/json"
+    )
 
 
 # ---------- UPLOAD ----------
