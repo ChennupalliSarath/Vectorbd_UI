@@ -1,0 +1,7 @@
+flask
+chromadb
+sentence-transformers
+scikit-learn
+numpy
+pymupdf
+python-docx
